@@ -14,4 +14,4 @@ $(BIN_CHECK): $(SRC_DIR)/check.c
 	$(CC) $(CFLAGS) -o $(BIN_CHECK) $(SRC_DIR)/check.c
 
 clean:
-	rm -f $(BIN_FORMAT) $(BIN_CHECK) disk.img
+	rm -f $(BIN_FORMAT) $(BIN_CHECK) exec/disk.img
