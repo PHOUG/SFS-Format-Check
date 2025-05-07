@@ -13,7 +13,7 @@ void write_inodes(FILE *disk);
 
 // ==== Main format.c ====
 
-int main() {
+int format_disk() {
     FILE *disk = fopen("disk.img", "wb");
     if (!disk) {
         perror("fopen");

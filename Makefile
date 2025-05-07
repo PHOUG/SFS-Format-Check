@@ -2,8 +2,9 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -std=c99 -g -Iinclude
 
-# Пути
+# Директории
 SRC_DIR = src
+INC_DIR = include
 OBJ_DIR = build
 BIN_DIR = exec
 BIN = $(BIN_DIR)/sfs
@@ -19,7 +20,7 @@ all: $(BIN)
 $(BIN): $(OBJS) | $(BIN_DIR)
 	$(CC) $(CFLAGS) -o $@ $^
 
-# Сборка .o файлов
+# Сборка object-файлов
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
@@ -30,11 +31,11 @@ $(OBJ_DIR):
 $(BIN_DIR):
 	mkdir -p $(BIN_DIR)
 
-# Очистка
+# Очистка всех сгенерированных файлов
 clean:
 	rm -rf $(OBJ_DIR) $(BIN_DIR)
 
-# Запуск
+# Запуск программы
 run: all
 	./$(BIN)
 

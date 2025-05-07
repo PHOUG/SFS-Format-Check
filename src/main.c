@@ -3,10 +3,8 @@
 #include <stdlib.h>
 
 #include "colors.h"
-
-// Объявляем внешние функции
-void format_disk();
-int check_main();
+#include "format.h"  // Подключение заголовочного файла для format_disk
+#include "check.h"   // Подключение заголовочного файла для check_main
 
 void print_help();
 

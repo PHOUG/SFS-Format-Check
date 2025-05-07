@@ -5,6 +5,8 @@
 #include "colors.h"
 #include "structures.h"
 
+// ==== Function Prototypes ====
+
 void read_superblock(FILE *disk, SuperBlock *sb);
 void read_bitmap(FILE *disk, uint8_t *bitmap);
 void read_inodes(FILE *disk, Inode *inodes);
@@ -13,7 +15,9 @@ void check_bitmap(const uint8_t *bitmap);
 int is_block_used(const uint8_t *bitmap, int block_index);
 void check_inodes(const Inode *inodes, const uint8_t *bitmap);
 
-int main() {
+// ==== Main check.c ====
+
+int check_main() {
     FILE *disk = fopen("disk.img", "rb");
     if (!disk) {
         perror("fopen");
