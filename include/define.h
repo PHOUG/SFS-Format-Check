@@ -1,0 +1,19 @@
+#ifndef DEFINE_H
+#define DEFINE_H
+
+#define DISK_SIZE      (1024 * 1024)   // 1 MB
+#define BLOCK_SIZE     512
+#define TOTAL_BLOCKS   (DISK_SIZE / BLOCK_SIZE)
+
+#define SUPERBLOCK_BLOCK     0
+#define BITMAP_BLOCK_START   1
+#define BITMAP_BLOCK_COUNT   2
+#define INODE_BLOCK_START    3
+#define INODE_BLOCK_COUNT    16
+#define DATA_BLOCK_START     (SUPERBLOCK_BLOCK + BITMAP_BLOCK_COUNT + INODE_BLOCK_COUNT)
+
+#define MAX_FILENAME_LENGTH  28
+#define MAX_INODES           ((INODE_BLOCK_COUNT * BLOCK_SIZE) / sizeof(Inode))
+#define MAX_BLOCKS_PER_FILE  8
+
+#endif // DEFINE_H

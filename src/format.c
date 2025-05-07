@@ -1,41 +1,9 @@
 #include <stdio.h>
-#include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
 
 #include "colors.h"
-
-#define DISK_SIZE      (1024 * 1024)   // 1 MB
-#define BLOCK_SIZE     512
-#define TOTAL_BLOCKS   (DISK_SIZE / BLOCK_SIZE)
-
-#define SUPERBLOCK_BLOCK     0
-#define BITMAP_BLOCK_START   1
-#define BITMAP_BLOCK_COUNT   2
-#define INODE_BLOCK_START    3
-#define INODE_BLOCK_COUNT    16
-#define DATA_BLOCK_START     (SUPERBLOCK_BLOCK + BITMAP_BLOCK_COUNT + INODE_BLOCK_COUNT)
-
-#define MAX_FILENAME_LENGTH  28
-#define MAX_INODES           ((INODE_BLOCK_COUNT * BLOCK_SIZE) / sizeof(Inode))
-#define MAX_BLOCKS_PER_FILE  8
-
-// ==== Structures ====
-
-typedef struct {
-    uint32_t magic;
-    uint32_t block_size;
-    uint32_t total_blocks;
-    uint32_t inode_table_start;
-    uint32_t data_block_start;
-} SuperBlock;
-
-typedef struct {
-    uint8_t used;
-    char name[MAX_FILENAME_LENGTH];
-    uint32_t size;
-    uint32_t direct_blocks[MAX_BLOCKS_PER_FILE];
-} Inode;
+#include "structures.h"
 
 // ==== Function Prototypes ====
 

@@ -36,7 +36,7 @@
 *.x86_64
 *.hex
 *.img
-/format
+exec/
 
 # Debug files
 *.dSYM/
