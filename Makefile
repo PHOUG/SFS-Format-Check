@@ -1,17 +1,41 @@
+# Компилятор и флаги
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c99 -Iinclude
+CFLAGS = -Wall -Wextra -std=c99 -g -Iinclude
 
+# Пути
 SRC_DIR = src
-BIN_FORMAT = exec/format
-BIN_CHECK = exec/check
+OBJ_DIR = build
+BIN_DIR = exec
+BIN = $(BIN_DIR)/sfs
 
-all: $(BIN_FORMAT) $(BIN_CHECK)
+# Исходники и объектные файлы
+SRCS = $(wildcard $(SRC_DIR)/*.c)
+OBJS = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRCS))
 
-$(BIN_FORMAT): $(SRC_DIR)/format.c
-	$(CC) $(CFLAGS) -o $(BIN_FORMAT) $(SRC_DIR)/format.c
+# Цель по умолчанию
+all: $(BIN)
 
-$(BIN_CHECK): $(SRC_DIR)/check.c
-	$(CC) $(CFLAGS) -o $(BIN_CHECK) $(SRC_DIR)/check.c
+# Сборка исполняемого файла
+$(BIN): $(OBJS) | $(BIN_DIR)
+	$(CC) $(CFLAGS) -o $@ $^
 
+# Сборка .o файлов
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Создание директорий
+$(OBJ_DIR):
+	mkdir -p $(OBJ_DIR)
+
+$(BIN_DIR):
+	mkdir -p $(BIN_DIR)
+
+# Очистка
 clean:
-	rm -f $(BIN_FORMAT) $(BIN_CHECK) exec/disk.img
+	rm -rf $(OBJ_DIR) $(BIN_DIR)
+
+# Запуск
+run: all
+	./$(BIN)
+
+.PHONY: all clean run
