@@ -9,19 +9,23 @@
 
 ### Примерная структура проета:
 ``` bash
-sfs_tool/
+SFS-Format-Check/
 ├── include/          # Заголовочные файлы
-│   └── sfs.h
-├── src/              # Исходники
-│   ├── main.c
-│   ├── format.c
 │   ├── check.c
-│   └── diskio.c
+│   ├── colors.c
+│   ├── define.c
+│   ├── format.c
+│   └── structures.c
+├── src/              # Исходники
+│   ├── check.c
+│   ├── format.c
+│   └── main.c
+├── .gitignore
 ├── Makefile
 └── README.md
 ```
 ---
----
+
 ## Описание файлов:
 
 ### ```format.c``` - форматирование SFS:
