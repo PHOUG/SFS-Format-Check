@@ -38,7 +38,7 @@ int check_main() {
     check_inodes(inodes, bitmap);
 
     fclose(disk);
-    printf("["GREEN""BOLD"OK"RESET"] Проверка завершена.\n");
+    printf("["GREEN""BOLD"OK"RESET"] Проверка завершена.\n\n");
     return 0;
 }
 
@@ -58,6 +58,7 @@ void read_inodes(FILE *disk, Inode *inodes) {
 }
 
 void check_superblock(const SuperBlock *sb) {
+    printf("\n["BOLD"PROCESS"RESET"] Проверка суперблока...\n");
     if (sb->magic != 0x20240507) {
         printf("["RED""BOLD"ERROR"RESET"] Неверная сигнатура суперблока (magic = 0x%x)\n", sb->magic);
         return;
@@ -66,16 +67,17 @@ void check_superblock(const SuperBlock *sb) {
         printf("["RED""BOLD"ERROR"RESET"] Параметры суперблока некорректны\n");
         return;
     }
-    printf("["YELLOW""BOLD"INFO"RESET"] "BOLD"Суперблок"RESET": проверка пройдена\n");
+    printf("["YELLOW""BOLD"INFO"RESET"] "BOLD"Суперблок"RESET": проверка пройдена\n\n");
 }
 
 void check_bitmap(const uint8_t *bitmap) {
+    printf("["BOLD"PROCESS"RESET"] Проверка битовой карты...\n");
     for (int i = 0; i < DATA_BLOCK_START; ++i) {
         if (!(bitmap[i / 8] & (1 << (i % 8)))) {
             printf("["RED""BOLD"ERROR"RESET"] Служебный блок #%d не помечен как занятый\n", i);
         }
     }
-    printf("["YELLOW""BOLD"INFO"RESET"] "BOLD"Битовая карта"RESET": проверка пройдена\n");
+    printf("["YELLOW""BOLD"INFO"RESET"] "BOLD"Битовая карта"RESET": проверка пройдена\n\n");
 }
 
 int is_block_used(const uint8_t *bitmap, int block_index) {
@@ -123,5 +125,5 @@ void check_inodes(const Inode *inodes, const uint8_t *bitmap) {
         }
     }
 
-    printf("["YELLOW""BOLD"INFO"RESET"] Inode-таблица: проверка завершена\n");
+    printf("["YELLOW""BOLD"INFO"RESET"] Inode-таблица: проверка завершена\n\n");
 }

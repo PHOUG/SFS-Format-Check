@@ -10,7 +10,7 @@ void print_help();
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
-        printf("["RED""BOLD"ERROR"RESET"] Не указана команда\n");
+        printf("\n["RED""BOLD"ERROR"RESET"] Не указана команда\n");
         print_help();
         return 1;
     }
@@ -35,5 +35,5 @@ void print_help() {
     printf("Использование:\n");
     printf(" > "ITALIC"./sfs format"RESET" — форматировать виртуальный диск\n");
     printf(" > "ITALIC"./sfs check"RESET"  — проверить целостность файловой системы\n");
-    printf(" > "ITALIC"./sfs help"RESET"   — вывести эту справку\n");
+    printf(" > "ITALIC"./sfs help"RESET"   — вывести эту справку\n\n");
 }

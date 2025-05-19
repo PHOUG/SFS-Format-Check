@@ -14,7 +14,11 @@ void write_inodes(FILE *disk);
 // ==== Main format.c ====
 
 int format_disk() {
-    FILE *disk = fopen("disk.img", "wb");
+    char disk_name[256];
+    printf("\n["BOLD"ENTER"RESET"] "BOLD"Введите название"RESET": ");
+    scanf("%s", disk_name);
+    printf("["BOLD"PROCESS"RESET"] "BOLD"Форматирование"RESET": создание файла %s...\n", disk_name);
+    FILE *disk = fopen(disk_name, "wb");
     if (!disk) {
         perror("fopen");
         return 1;
@@ -27,12 +31,18 @@ int format_disk() {
     // Вернуться к началу
     fseek(disk, 0, SEEK_SET);
 
+    printf("["BOLD"PROCESS"RESET"] "BOLD"Форматирование"RESET": создание суперблока, битовой карты и inode-таблицы...\n");
+
+    
+    printf("["BOLD"PROCESS"RESET"] "BOLD"Форматирование"RESET": создание суперблока...\n");
     write_superblock(disk);
+    printf("["BOLD"PROCESS"RESET"] "BOLD"Форматирование"RESET": создание битовой карты...\n");
     write_bitmap(disk);
+    printf("["BOLD"PROCESS"RESET"] "BOLD"Форматирование"RESET": создание inode-таблицы...\n");
     write_inodes(disk);
 
     fclose(disk);
-    printf("["GREEN""BOLD"OK"RESET"] "BOLD"Форматирование завершено"RESET": disk.img создан.\n");
+    printf("["GREEN""BOLD"OK"RESET"] "BOLD"Форматирование завершено"RESET": %s создан.\n\n", disk_name);
     return 0;
 }
 

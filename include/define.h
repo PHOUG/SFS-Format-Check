@@ -16,4 +16,6 @@
 #define MAX_INODES           ((INODE_BLOCK_COUNT * BLOCK_SIZE) / sizeof(Inode))
 #define MAX_BLOCKS_PER_FILE  8
 
+#define DATA_BLOCK_COUNT (TOTAL_BLOCKS - DATA_BLOCK_START)
+
 #endif // DEFINE_H
