@@ -6,7 +6,8 @@
 
 // ==== Disk Structures ====
 
-typedef struct {
+typedef struct
+{
     uint32_t magic;
     uint32_t block_size;
     uint32_t total_blocks;
@@ -14,7 +15,8 @@ typedef struct {
     uint32_t data_block_start;
 } SuperBlock;
 
-typedef struct {
+typedef struct
+{
     uint8_t used;
     char name[MAX_FILENAME_LENGTH];
     uint32_t size;

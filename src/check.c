@@ -4,9 +4,11 @@
 
 #include "colors.h"
 #include "structures.h"
+#include "error.h"
 
 // ==== Function Prototypes ====
 
+int error_flag = 0;
 void read_superblock(FILE *disk, SuperBlock *sb);
 void read_bitmap(FILE *disk, uint8_t *bitmap);
 void read_inodes(FILE *disk, Inode *inodes);
@@ -17,9 +19,16 @@ void check_inodes(const Inode *inodes, const uint8_t *bitmap);
 
 // ==== Main check.c ====
 
-int check_main() {
-    FILE *disk = fopen("disk.img", "rb");
-    if (!disk) {
+int check_main()
+{
+    system("clear");
+    char disk_name[256];
+    printf(ENTER "" BOLD " Введите название" RESET ": ");
+    scanf("%s", disk_name);
+
+    FILE *disk = fopen(disk_name, "rb");
+    if (!disk)
+    {
         perror("fopen");
         return 1;
     }
@@ -38,92 +47,128 @@ int check_main() {
     check_inodes(inodes, bitmap);
 
     fclose(disk);
-    printf("["GREEN""BOLD"OK"RESET"] Проверка завершена.\n\n");
+    printf("[" GREEN "" BOLD "OK" RESET "] Проверка завершена.\n\n");
     return 0;
 }
 
-void read_superblock(FILE *disk, SuperBlock *sb) {
+void read_superblock(FILE *disk, SuperBlock *sb)
+{
     fseek(disk, SUPERBLOCK_BLOCK * BLOCK_SIZE, SEEK_SET);
     fread(sb, sizeof(SuperBlock), 1, disk);
 }
 
-void read_bitmap(FILE *disk, uint8_t *bitmap) {
+void read_bitmap(FILE *disk, uint8_t *bitmap)
+{
     fseek(disk, BITMAP_BLOCK_START * BLOCK_SIZE, SEEK_SET);
     fread(bitmap, BLOCK_SIZE * BITMAP_BLOCK_COUNT, 1, disk);
 }
 
-void read_inodes(FILE *disk, Inode *inodes) {
+void read_inodes(FILE *disk, Inode *inodes)
+{
     fseek(disk, INODE_BLOCK_START * BLOCK_SIZE, SEEK_SET);
     fread(inodes, sizeof(Inode), MAX_INODES, disk);
 }
 
-void check_superblock(const SuperBlock *sb) {
-    printf("\n["BOLD"PROCESS"RESET"] Проверка суперблока...\n");
-    if (sb->magic != 0x20240507) {
-        printf("["RED""BOLD"ERROR"RESET"] Неверная сигнатура суперблока (magic = 0x%x)\n", sb->magic);
-        return;
+void check_superblock(const SuperBlock *sb)
+{
+    printf("\n[" BOLD "PROCESS" RESET "] Проверка суперблока...\n");
+    if (sb->magic != 0x20240507)
+    {
+        printf("[" RED "" BOLD "ERROR" RESET "] Неверная сигнатура суперблока (magic = 0x%x)\n", sb->magic);
+        error_flag = 1;
     }
-    if (sb->block_size != BLOCK_SIZE || sb->total_blocks != TOTAL_BLOCKS) {
-        printf("["RED""BOLD"ERROR"RESET"] Параметры суперблока некорректны\n");
-        return;
+    if (sb->block_size != BLOCK_SIZE || sb->total_blocks != TOTAL_BLOCKS)
+    {
+        printf("[" RED "" BOLD "ERROR" RESET "] Параметры суперблока некорректны\n");
+        error_flag = 1;
     }
-    printf("["YELLOW""BOLD"INFO"RESET"] "BOLD"Суперблок"RESET": проверка пройдена\n\n");
+    if (error_flag)
+        printf("[" RED "" BOLD "ERROR" RESET "] " BOLD "Суперблок" RESET ": проверка не пройдена\n\n");
+    else
+        printf("[" YELLOW "" BOLD "INFO" RESET "] " BOLD "Суперблок" RESET ": проверка пройдена\n\n");
 }
 
-void check_bitmap(const uint8_t *bitmap) {
-    printf("["BOLD"PROCESS"RESET"] Проверка битовой карты...\n");
-    for (int i = 0; i < DATA_BLOCK_START; ++i) {
-        if (!(bitmap[i / 8] & (1 << (i % 8)))) {
-            printf("["RED""BOLD"ERROR"RESET"] Служебный блок #%d не помечен как занятый\n", i);
+void check_bitmap(const uint8_t *bitmap)
+{
+    printf("[" BOLD "PROCESS" RESET "] Проверка битовой карты...\n");
+    for (int i = 0; i < DATA_BLOCK_START; ++i)
+    {
+        if (!(bitmap[i / 8] & (1 << (i % 8))))
+        {
+            printf("[" RED "" BOLD "ERROR" RESET "] Служебный блок #%d не помечен как занятый\n", i);
+            error_flag = 1;
         }
     }
-    printf("["YELLOW""BOLD"INFO"RESET"] "BOLD"Битовая карта"RESET": проверка пройдена\n\n");
+    if (error_flag)
+        printf("[" RED "" BOLD "ERROR" RESET "] " BOLD "Битовая карта" RESET ": проверка не пройдена\n\n");
+    else
+        printf("[" YELLOW "" BOLD "INFO" RESET "] " BOLD "Битовая карта" RESET ": проверка пройдена\n\n");
 }
 
-int is_block_used(const uint8_t *bitmap, int block_index) {
+int is_block_used(const uint8_t *bitmap, int block_index)
+{
     return bitmap[block_index / 8] & (1 << (block_index % 8));
 }
 
-void check_inodes(const Inode *inodes, const uint8_t *bitmap) {
+void check_inodes(const Inode *inodes, const uint8_t *bitmap)
+{
     int used_blocks[TOTAL_BLOCKS] = {0};
 
-    printf("["BOLD"PROCESS"RESET"] Проверка inode-таблицы...\n");
-    for (unsigned int i = 0; i < MAX_INODES; ++i) {
+    printf("[" BOLD "PROCESS" RESET "] Проверка inode-таблицы...\n");
+    for (unsigned int i = 0; i < MAX_INODES; ++i)
+    {
         const Inode *inode = &inodes[i];
 
-        if (!inode->used) continue;
+        if (!inode->used)
+            continue;
 
         // Проверка имени
-        if (strlen(inode->name) == 0 || strlen(inode->name) >= MAX_FILENAME_LENGTH) {
-            printf("["RED""BOLD"ERROR"RESET"] Inode #%d: некорректное имя файла '%s'\n", i, inode->name);
+        if (strlen(inode->name) == 0 || strlen(inode->name) >= MAX_FILENAME_LENGTH)
+        {
+            printf("[" RED "" BOLD "ERROR" RESET "] Inode #%d: некорректное имя файла '%s'\n", i, inode->name);
+            error_flag = 1;
         }
 
         // Проверка размера
-        if (inode->size > MAX_BLOCKS_PER_FILE * BLOCK_SIZE) {
-            printf("["RED""BOLD"ERROR"RESET"] Inode #%d: размер файла превышает допустимый: %u байт\n", i, inode->size);
+        if (inode->size > MAX_BLOCKS_PER_FILE * BLOCK_SIZE)
+        {
+            printf("[" RED "" BOLD "ERROR" RESET "] Inode #%d: размер файла превышает допустимый: %u байт\n", i, inode->size);
+            error_flag = 1;
         }
 
         // Проверка блоков
-        for (int j = 0; j < MAX_BLOCKS_PER_FILE; ++j) {
+        for (int j = 0; j < MAX_BLOCKS_PER_FILE; ++j)
+        {
             uint32_t block = inode->direct_blocks[j];
-            if (block == 0) continue;
+            if (block == 0)
+                continue;
 
-            if (block < DATA_BLOCK_START || block >= TOTAL_BLOCKS) {
-                printf("["RED""BOLD"ERROR"RESET"] Inode #%d: недопустимый номер блока: %u\n", i, block);
+            if (block < DATA_BLOCK_START || block >= TOTAL_BLOCKS)
+            {
+                printf(ERROR " Inode #%d: недопустимый номер блока: %u\n", i, block);
+                error_flag = 1;
                 continue;
             }
 
-            if (!is_block_used(bitmap, block)) {
-                printf("["RED""BOLD"ERROR"RESET"] Inode #%d: блок #%u не помечен как занятый в bitmap\n", i, block);
+            if (!is_block_used(bitmap, block))
+            {
+                printf(ERROR " Inode #%d: блок #%u не помечен как занятый в bitmap\n", i, block);
+                error_flag = 1;
             }
 
-            if (used_blocks[block]) {
-                printf("["RED""BOLD"ERROR"RESET"] Inode #%d: блок #%u уже используется другим inode\n", i, block);
-            } else {
+            if (used_blocks[block])
+            {
+                printf(ERROR " Inode #%d: блок #%u уже используется другим inode\n", i, block);
+                error_flag = 1;
+            }
+            else
+            {
                 used_blocks[block] = 1;
             }
         }
     }
-
-    printf("["YELLOW""BOLD"INFO"RESET"] Inode-таблица: проверка завершена\n\n");
+    if (error_flag)
+        printf(ERROR " Inode-таблица: проверка не пройдена\n\n");
+    else
+        printf(INFO " Inode-таблица: проверка завершена\n\n");
 }

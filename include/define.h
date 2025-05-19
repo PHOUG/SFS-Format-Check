@@ -16,6 +16,16 @@
 #define MAX_INODES           ((INODE_BLOCK_COUNT * BLOCK_SIZE) / sizeof(Inode))
 #define MAX_BLOCKS_PER_FILE  8
 
-#define DATA_BLOCK_COUNT (TOTAL_BLOCKS - DATA_BLOCK_START)
+#define DATA_BLOCK_COUNT     (TOTAL_BLOCKS - DATA_BLOCK_START)
+
+/* Style block */
+#define ERROR    "["RED""BOLD"ERROR"RESET"]"
+#define INFO     "["YELLOW""BOLD"INFO"RESET"]"
+#define ENTER    "["BOLD"ENTER"RESET"]"
+#define PROCESS  "["BOLD"PROCESS"RESET"]"
+#define OK       "["GREEN""BOLD"OK"RESET"]"
+#define HELP     "["CYAN""BOLD"HELP"RESET"]"
+#define WARNING  "["YELLOW""BOLD"WARNING"RESET"]"
+#define SUCCESS  "["GREEN""BOLD"SUCCESS"RESET"]"
 
 #endif // DEFINE_H
